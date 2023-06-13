@@ -25,6 +25,7 @@ async function garminStepCountCheck() {
 
   const date = dateRaw.format("YYYY-MM-DD");
   const hour = dateRaw.format("H");
+  const minute = dateRaw.format("m");
 
   console.log("DATE", date, hour);
 
@@ -48,9 +49,16 @@ async function garminStepCountCheck() {
     value2: remaining,
   };
 
-  await axios.post(process.env.IFTTT_WEBHOOK, payload);
+  const goalCompleted = totalSteps > MY_GOAL;
+  const isEvening = parseInt(hour) >= 21;
+  const isAfternoon =
+    [14, 17, 19, 20].includes(parseInt(hour)) && parseInt(minute) < 30;
 
-  if (totalSteps < MY_GOAL && parseInt(hour) >= 21) {
+  if (!goalCompleted && (isAfternoon || isEvening)) {
+    await axios.post(process.env.IFTTT_WEBHOOK, payload);
+  }
+
+  if (!goalCompleted && isEvening) {
     await axios.post(process.env.IFTTT_WEBHOOK_LASTCALL, payload);
   }
 
@@ -63,4 +71,6 @@ async function garminStepCountCheck() {
   };
 }
 
-module.exports = { garminStepCountCheck };
+module.exports = {
+  garminStepCountCheck,
+};
