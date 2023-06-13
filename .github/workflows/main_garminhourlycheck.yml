@@ -39,6 +39,6 @@ jobs:
         id: fa
         with:
           app-name: "garminhourlycheck"
-          slot-name: "production"
+          slot-name: "Production"
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_b5a306cf88c74aca98c82223bca3d6e8 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CC6E48DFCCB340B1A01908D75E047BD1 }}
