@@ -50,9 +50,9 @@ async function garminStepCountCheck() {
   };
 
   const goalCompleted = totalSteps > MY_GOAL;
-  const isEvening = parseInt(hour) >= 21;
+  const isEvening = parseInt(hour) >= 22;
   const isAfternoon =
-    [14, 17, 19, 20].includes(parseInt(hour)) && parseInt(minute) < 30;
+    [14, 17, 19, 20, 21].includes(parseInt(hour)) && parseInt(minute) < 30;
 
   if (!goalCompleted && (isAfternoon || isEvening)) {
     await axios.post(process.env.IFTTT_WEBHOOK, payload);
