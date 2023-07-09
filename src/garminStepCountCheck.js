@@ -2,8 +2,20 @@ const { GarminConnect } = require("garmin-connect");
 const axios = require("axios");
 var moment = require("moment-timezone");
 
+const { DefaultAzureCredential } = require("@azure/identity");
+const { SecretClient } = require("@azure/keyvault-secrets");
+
+const credential = new DefaultAzureCredential();
+
+const vaultName = "garminhourlycheck";
+const url = `https://${vaultName}.vault.azure.net`;
+const client = new SecretClient(url, credential);
+
+const secretName = "GarminSession";
+
 async function garminStepCountCheck() {
   console.log("Checking environment variables...");
+  const error = null;
 
   if (!process.env.GARMIN_USERNAME || !process.env.GARMIN_PASSWORD) {
     throw new Error("Missing user credentials");
@@ -35,7 +47,21 @@ async function garminStepCountCheck() {
     username: process.env.GARMIN_USERNAME,
     password: process.env.GARMIN_PASSWORD,
   });
-  await GCClient.login();
+
+  try {
+    const session = await client.getSecret(secretName);
+    await GCClient.restoreOrLogin(
+      session,
+      process.env.GARMIN_USERNAME,
+      process.env.GARMIN_PASSWORD
+    );
+
+    if (GCClient.sessionJson) {
+      await client.setSecret(secretName, GCClient.sessionJson);
+    }
+  } catch (e) {
+    error = e.message;
+  }
 
   const steps = await GCClient.getSteps(new Date(date));
 
@@ -69,6 +95,7 @@ async function garminStepCountCheck() {
     totalSteps,
     remaining,
     steps,
+    error,
   };
 }
 
