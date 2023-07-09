@@ -15,7 +15,7 @@ const secretName = "GarminSession";
 
 async function garminStepCountCheck() {
   console.log("Checking environment variables...");
-  const error = null;
+  let error = null;
 
   if (!process.env.GARMIN_USERNAME || !process.env.GARMIN_PASSWORD) {
     throw new Error("Missing user credentials");
