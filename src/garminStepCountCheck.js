@@ -53,7 +53,7 @@ async function garminStepCountCheck() {
     console.log("Session Exist", !!session);
 
     await GCClient.restoreOrLogin(
-      session,
+      !!session && JSON.parse(session),
       process.env.GARMIN_USERNAME,
       process.env.GARMIN_PASSWORD
     );
@@ -66,7 +66,7 @@ async function garminStepCountCheck() {
 
   if (GCClient.sessionJson) {
     console.log("ADDING SESSION TOKEN");
-    await client.setSecret(secretName, GCClient.sessionJson);
+    await client.setSecret(secretName, JSON.stringify(GCClient.sessionJson));
   }
 
   const steps = await GCClient.getSteps(new Date(date));
