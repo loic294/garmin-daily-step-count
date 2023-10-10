@@ -33,7 +33,8 @@ async function garminStepCountCheck() {
 
   const dateRaw = moment()
     .utc(new Date().toUTCString())
-    .tz("America/Los_Angeles");
+    //.tz("America/Los_Angeles"); // PST
+    .tz("America/New_York"); // EST
 
   const date = dateRaw.format("YYYY-MM-DD");
   const hour = dateRaw.format("H");
