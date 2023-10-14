@@ -68,7 +68,11 @@ async function garminStepCountCheck() {
     error = e.message;
     console.error("ERROR WITH LOGING", e);
 
-    await GCClient.login();
+    try {
+      await GCClient.login();
+    } catch(e2) {
+      console.log('ERROR WITH LOGIN', e2.message);
+    }
   }
 
   if (
