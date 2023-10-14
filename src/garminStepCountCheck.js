@@ -55,6 +55,10 @@ async function garminStepCountCheck() {
     session = await client.getSecret(secretName);
     console.log("Session Exist", !!session, Object.keys(session));
 
+    if (!!session && session.value === "") {
+      throw Error("Secret is empty. New login is needed.");
+    }
+
     await GCClient.restoreOrLogin(
       !!session && JSON.parse(session.value),
       process.env.GARMIN_USERNAME,
@@ -85,7 +89,7 @@ async function garminStepCountCheck() {
     console.log('ERROR GETTING STEPS', e);
 
     console.log("RESET SECRET TO EMPTY VALUE");
-    await client.deleteSecret(secretName);
+    await client.setSecret(secretName, "");
 
     console.log("RETRY LOGIN");
     await GCClient.login();
