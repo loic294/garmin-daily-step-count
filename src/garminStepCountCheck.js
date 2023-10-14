@@ -71,7 +71,8 @@ async function garminStepCountCheck() {
     try {
       await GCClient.login();
     } catch(e2) {
-      console.log('ERROR WITH LOGIN', e2.message);
+      error = e2.message;
+      console.log('ERROR WITH LOGIN RETRY', e2.message);
     }
   }
 
