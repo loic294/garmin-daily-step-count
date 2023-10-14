@@ -69,7 +69,7 @@ async function garminStepCountCheck() {
     console.error("ERROR WITH LOGING", e);
 
     try {
-      await GCClient.login();
+      await GCClient.login(process.env.GARMIN_USERNAME, process.env.GARMIN_PASSWORD);
 
       console.log('USER INFO', await GCClient.getUserInfo());
       
