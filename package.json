@@ -10,7 +10,7 @@
     "@azure/identity": "^3.2.3",
     "@azure/keyvault-secrets": "^4.7.0",
     "axios": "^1.4.0",
-    "garmin-connect": "^1.4.6",
+    "garmin-connect": "^1.5.1",
     "moment-timezone": "^0.5.43"
   },
   "devDependencies": {}
