@@ -75,9 +75,26 @@ async function garminStepCountCheck() {
     await client.setSecret(secretName, JSON.stringify(GCClient.sessionJson));
   }
 
-  const steps = await GCClient.getSteps(new Date(date));
+  let steps = -1;
 
-  console.log("STEPS", steps);
+  try {
+     steps = await GCClient.getSteps(new Date(date));
+     console.log("STEPS", steps);
+  } catch (e) {
+    error = e.message;
+    console.log('ERROR GETTING STEPS', e);
+
+    console.log("RESET SECRET TO EMPTY VALUE");
+    await client.deleteSecret(secretName);
+
+    console.log("RETRY LOGIN");
+    await GCClient.login();
+
+    console.log("RETRY GETTING STEPS");
+    steps = await GCClient.getSteps(new Date(date));
+    console.log("STEPS", steps);
+  }
+ 
 
   const totalSteps = steps.reduce((acc, item) => acc + item.steps, 0);
   const remaining = MY_GOAL - totalSteps;
