@@ -1,4 +1,4 @@
-const { GarminConnect } = require("garmin-connect");
+const { GarminConnect } = require("@gooin/garmin-connect"); // Waiting for oauth from main package
 const axios = require("axios");
 var moment = require("moment-timezone");
 
