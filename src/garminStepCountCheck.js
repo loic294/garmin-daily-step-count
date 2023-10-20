@@ -107,8 +107,7 @@ async function garminStepCountCheck() {
     console.log("STEPS", steps);
   }
 
-  const totalSteps = steps.reduce((acc, item) => acc + item.steps, 0);
-  const remaining = MY_GOAL - totalSteps;
+  const remaining = MY_GOAL - steps;
 
   const payload = {
     value1: totalSteps,
@@ -121,15 +120,32 @@ async function garminStepCountCheck() {
   const isEvening = [20, 21].includes(parseInt(hour));
   const isNight = parseInt(hour) >= 22;
 
+  console.log("Total Steps:", steps);
+  console.log("Remaining:", remaining);
+  console.log("Goal Completed?", goalCompleted ? "Yes" : "No");
+  console.log("Is Afternoon?", isAfternoon ? "Yes" : "No");
+  console.log("Is Evening?", isEvening ? "Yes" : "No");
+  console.log("Is Night?", isNight ? "Yes" : "No");
+
   if (!goalCompleted && (isAfternoon || isEvening || isNight)) {
+    console.log(
+      "Sending IFTTT notification webhook",
+      process.env.IFTTT_WEBHOOK
+    );
     await axios.post(process.env.IFTTT_WEBHOOK, payload);
+    console.log("IFTTT notification webhook sent");
   }
 
   if (!goalCompleted && isNight) {
+    onsole.log(
+      "Sending IFTTT call webhook",
+      process.env.IFTTT_WEBHOOK_LASTCALL
+    );
     await axios.post(process.env.IFTTT_WEBHOOK_LASTCALL, payload);
+    console.log("IFTTT call webhook sent");
   }
 
-  return {
+  const results = {
     date,
     hour,
     totalSteps,
@@ -137,6 +153,10 @@ async function garminStepCountCheck() {
     steps,
     error,
   };
+
+  console.log("Final Results", results);
+
+  return results;
 }
 
 module.exports = {
