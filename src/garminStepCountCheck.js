@@ -68,7 +68,7 @@ async function garminStepCountCheck() {
 
     await GCClient.loadToken(tokens.oauth1, tokens.oauth2);
 
-    const userInfo = GCClient.getUserInfo();
+    const userInfo = GCClient.getUserProfile();
 
     console.log("USER INFO", userInfo);
   } catch (e) {
@@ -78,7 +78,7 @@ async function garminStepCountCheck() {
     try {
       await GCClient.login();
 
-      console.log("USER INFO", await GCClient.getUserInfo());
+      console.log("USER INFO", await GCClient.getUserProfile());
     } catch (e2) {
       error = e2.message;
       console.log("ERROR WITH LOGIN RETRY", e2.message);
