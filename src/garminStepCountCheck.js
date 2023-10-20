@@ -109,11 +109,11 @@ async function garminStepCountCheck() {
     console.log("RESET SECRET TO EMPTY VALUE");
     await client.setSecret(secretName, "");
 
-    console.log("RETRY LOGIN");
-    await GCClient.login();
+    // console.log("RETRY LOGIN");
+    // await GCClient.login();
 
-    console.log("RETRY GETTING STEPS");
-    steps = await GCClient.getSteps(new Date(date));
+    // console.log("RETRY GETTING STEPS");
+    // steps = await GCClient.getSteps(new Date(date));
     console.log("STEPS", steps);
   }
 
