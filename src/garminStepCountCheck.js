@@ -31,10 +31,9 @@ async function garminStepCountCheck() {
 
   const MY_GOAL = +process.env.MY_GOAL;
 
-  const dateRaw = moment()
-    .utc(new Date().toUTCString())
-    //.tz("America/Los_Angeles"); // PST
-    .tz("America/New_York"); // EST
+  const timezone = process.env.TIMEZONE || "America/Los_Angeles";
+  console.log("TIMEZONE", timezone);
+  const dateRaw = moment().utc(new Date().toUTCString()).tz(timezone);
 
   const date = dateRaw.format("YYYY-MM-DD");
   const hour = dateRaw.format("H");
@@ -67,10 +66,6 @@ async function garminStepCountCheck() {
     const tokens = JSON.parse(session.value);
 
     await GCClient.loadToken(tokens.oauth1, tokens.oauth2);
-
-    const userInfo = GCClient.getUserProfile();
-
-    console.log("USER INFO", userInfo);
   } catch (e) {
     error = e.message;
     console.error("ERROR WITH LOGING", e);
@@ -109,11 +104,6 @@ async function garminStepCountCheck() {
     console.log("RESET SECRET TO EMPTY VALUE");
     await client.setSecret(secretName, "");
 
-    // console.log("RETRY LOGIN");
-    // await GCClient.login();
-
-    // console.log("RETRY GETTING STEPS");
-    // steps = await GCClient.getSteps(new Date(date));
     console.log("STEPS", steps);
   }
 
