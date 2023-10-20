@@ -54,8 +54,6 @@ async function garminStepCountCheck() {
     password: process.env.GARMIN_PASSWORD,
   });
 
-  console.log("HAS AUTH TOKENS", !!oauth1, !!oauth2);
-
   let session = {};
 
   try {
@@ -93,6 +91,8 @@ async function garminStepCountCheck() {
 
   const oauth1 = GCClient.client.oauth1Token;
   const oauth2 = GCClient.client.oauth2Token;
+
+  console.log("HAS AUTH TOKENS", !!oauth1, !!oauth2);
 
   const jsonAuthTokens = JSON.stringify({ oauth1, oauth2 });
 
