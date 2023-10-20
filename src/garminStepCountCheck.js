@@ -1,4 +1,4 @@
-const { GarminConnect } = require("@gooin/garmin-connect"); // Waiting for oauth from main package
+const { GarminConnect } = require("garmin-connect"); // Waiting for oauth from main package
 const axios = require("axios");
 var moment = require("moment-timezone");
 
@@ -49,13 +49,15 @@ async function garminStepCountCheck() {
     password: process.env.GARMIN_PASSWORD,
   });
 
+  console.log("HAS AUTH TOKENS", !!oauth1, !!oauth2);
+
   let session = {};
 
   try {
     session = await client.getSecret(secretName);
     console.log("Session Exist", !!session, Object.keys(session));
 
-    if (!!session && session.value === "") {
+    if (!!session && session.value === "" && JSON.parse(session.value).oauth1) {
       throw Error("Secret is empty. New login is needed.");
     }
 
@@ -64,37 +66,42 @@ async function garminStepCountCheck() {
       process.env.GARMIN_USERNAME,
       process.env.GARMIN_PASSWORD
     );
+
+    const userInfo = GCClient.getUserInfo();
+
+    console.log("USER INFO", userInfo);
   } catch (e) {
     error = e.message;
     console.error("ERROR WITH LOGING", e);
 
     try {
-      await GCClient.login(process.env.GARMIN_USERNAME, process.env.GARMIN_PASSWORD);
+      await GCClient.login();
 
-      console.log('USER INFO', await GCClient.getUserInfo());
-      
-    } catch(e2) {
+      console.log("USER INFO", await GCClient.getUserInfo());
+    } catch (e2) {
       error = e2.message;
-      console.log('ERROR WITH LOGIN RETRY', e2.message);
+      console.log("ERROR WITH LOGIN RETRY", e2.message);
     }
   }
 
-  if (
-    GCClient.sessionJson &&
-    JSON.stringify(session.value) !== JSON.stringify(GCClient.sessionJson)
-  ) {
+  const oauth1 = GCClient.client.oauth1Token;
+  const oauth2 = GCClient.client.oauth2Token;
+
+  const jsonAuthTokens = JSON.stringify({ oauth1, oauth2 });
+
+  if (oauth1 && oauth2 && JSON.stringify(session.value) !== jsonAuthTokens) {
     console.log("ADDING SESSION TOKEN");
-    await client.setSecret(secretName, JSON.stringify(GCClient.sessionJson));
+    await client.setSecret(secretName, jsonAuthTokens);
   }
 
   let steps = -1;
 
   try {
-     steps = await GCClient.getSteps(new Date(date));
-     console.log("STEPS", steps);
+    steps = await GCClient.getSteps(new Date(date));
+    console.log("STEPS", steps);
   } catch (e) {
     error = e.message;
-    console.log('ERROR GETTING STEPS', e);
+    console.log("ERROR GETTING STEPS", e);
 
     console.log("RESET SECRET TO EMPTY VALUE");
     await client.setSecret(secretName, "");
@@ -106,7 +113,6 @@ async function garminStepCountCheck() {
     steps = await GCClient.getSteps(new Date(date));
     console.log("STEPS", steps);
   }
- 
 
   const totalSteps = steps.reduce((acc, item) => acc + item.steps, 0);
   const remaining = MY_GOAL - totalSteps;
