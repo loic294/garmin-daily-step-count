@@ -46,7 +46,7 @@ async function garminStepCountCheck() {
 
   console.log(
     process.env.GARMIN_USERNAME,
-    process.env.GARMIN_PASSWORD.substring(1, 4)
+    process.env.GARMIN_PASSWORD.substring(0, 5)
   );
 
   const GCClient = new GarminConnect({
@@ -60,17 +60,13 @@ async function garminStepCountCheck() {
     session = await client.getSecret(secretName);
     console.log("Session Exist", !!session, Object.keys(session));
 
-    if (!!session && session.value === "" && JSON.parse(session.value).oauth1) {
+    if (!!session && session.value === "") {
       throw Error("Secret is empty. New login is needed.");
     }
 
     const tokens = JSON.parse(session.value);
 
-    await GCClient.loadToken(
-      !!session && JSON.parse(session.value),
-      tokens.oauth1,
-      tokens.oauth2
-    );
+    await GCClient.loadToken(tokens.oauth1, tokens.oauth2);
 
     const userInfo = GCClient.getUserInfo();
 
